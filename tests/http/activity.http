@@ -1,0 +1,10 @@
+
+POST http://localhost:9000/activities
+Content-Type: application/json
+
+{
+  "type": "volleyball",
+  "date": "2024-01-05T15:45:00-03:00",
+  "personId": 2,
+  "challengeId": 7
+}

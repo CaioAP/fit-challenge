@@ -1,0 +1,15 @@
+
+POST http://localhost:9000/people
+Content-Type: application/json
+
+{
+  "name": "joao da silva",
+  "email": "joao@email.com",
+  "password": "1234",
+  "phone": "62912345678"
+}
+
+###
+
+GET http://localhost:9000/people/1
+Content-Type: application/json

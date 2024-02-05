@@ -1,0 +1,13 @@
+
+POST http://localhost:9000/challenges
+Content-Type: application/json
+
+{
+  "name": "Desafio do bonde",
+  "description": "Desafio fit do bonde",
+  "goal": 30,
+  "maxPerDay": 1,
+  "startDate": "2024-02-01T00:00:00-03:00",
+  "finishDate": "2024-05-25T15:51:00-03:00",
+  "personId": 2
+}
