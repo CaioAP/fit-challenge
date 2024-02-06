@@ -18,7 +18,7 @@ type Challenge struct {
 
 func (c *Challenge) CalculateRemainingDays(date time.Time) int {
 	if date.After(c.FinishDate) {
-		return 0
+		return -1
 	}
 	difference := c.FinishDate.Sub(date)
 	differenceInDays := int(difference.Hours() / 24)
@@ -30,7 +30,8 @@ func (c *Challenge) ValidateMaxPerDay(quantity int) bool {
 }
 
 func (c *Challenge) ValidateDate(date time.Time) bool {
-	return date.After(c.StartDate) && date.Before(c.FinishDate)
+	return (date.Equal(c.StartDate) || date.Equal(c.FinishDate)) ||
+		(date.After(c.StartDate) && date.Before(c.FinishDate))
 }
 
 func (c *Challenge) AddPerson(person Person) {
