@@ -39,3 +39,23 @@ func (r *Person) FindById(id int) (model.Person, error) {
 	}
 	return person, nil
 }
+
+func (r *Person) FindByEmail(email string) (model.Person, error) {
+	person := model.Person{}
+	query := "SELECT id, name, phone, email, password, created_at FROM person WHERE email = $1"
+	err := r.DB.QueryRow(query, email).Scan(
+		&person.ID,
+		&person.Name,
+		&person.Phone,
+		&person.Email,
+		&person.Password,
+		&person.CreatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return model.Person{}, errors.New("email not found")
+		}
+		return model.Person{}, err
+	}
+	return person, nil
+}

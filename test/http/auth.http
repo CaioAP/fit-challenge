@@ -1,0 +1,25 @@
+
+POST http://localhost:9000/register
+Content-Type: application/json
+
+{
+  "name": "usuario teste",
+  "email": "usuario@email.com",
+  "password": "senha@321",
+  "phone": "62999991234"
+}
+
+###
+
+POST http://localhost:9000/login
+Content-Type: application/json
+
+{
+  "email": "usuario@email.com",
+  "password": "senha@321"
+}
+
+###
+
+POST http://localhost:9000/logout
+Content-Type: application/json

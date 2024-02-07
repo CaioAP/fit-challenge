@@ -7,5 +7,6 @@ type Person struct {
 	Name      string
 	Email     string
 	Phone     string
+	Password  string
 	CreatedAt time.Time
 }
