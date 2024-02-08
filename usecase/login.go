@@ -20,7 +20,7 @@ func (u *Login) Execute(dto dto.Login) (model.AuthOutput, error) {
 		return model.AuthOutput{}, err
 	}
 	if !model.CheckPasswordHash(dto.Password, person.Password) {
-		return model.AuthOutput{}, errors.New("invalid password")
+		return model.AuthOutput{}, errors.New("password does not match")
 	}
 	token := model.CreateToken(u.TokenAuth, person.ID)
 	return model.AuthOutput{

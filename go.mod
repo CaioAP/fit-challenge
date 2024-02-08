@@ -9,6 +9,7 @@ require golang.org/x/crypto v0.18.0
 require (
 	github.com/go-chi/chi/v5 v5.0.11
 	github.com/go-chi/jwtauth v1.2.0
+	github.com/rs/cors v1.10.1
 )
 
 require (

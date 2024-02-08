@@ -12,6 +12,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/jwtauth"
 	_ "github.com/lib/pq"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -76,6 +77,7 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+
 	r.Group(func(r chi.Router) {
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator)
@@ -97,6 +99,14 @@ func main() {
 		r.Post("/register", authHandler.Register)
 	})
 
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:5173"},
+		AllowCredentials: true,
+		// Enable Debugging for testing, consider disabling in production
+		Debug: true,
+	})
+	s := c.Handler(r)
+
 	log.Println("server running at port 9000...")
-	log.Fatal(http.ListenAndServe(":9000", r))
+	log.Fatal(http.ListenAndServe(":9000", s))
 }
