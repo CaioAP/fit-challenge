@@ -26,5 +26,6 @@ func (u *Login) Execute(dto dto.Login) (model.AuthOutput, error) {
 	return model.AuthOutput{
 		Token: token,
 		ID:    person.ID,
+		Name:  person.Name,
 	}, nil
 }

@@ -40,5 +40,6 @@ func (u *Register) Execute(input dto.Register) (model.AuthOutput, error) {
 	return model.AuthOutput{
 		Token: token,
 		ID:    person.ID,
+		Name:  person.Name,
 	}, nil
 }

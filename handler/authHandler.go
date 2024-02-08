@@ -42,6 +42,7 @@ func (h *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	})
 	response, err := json.Marshal(map[string]interface{}{
 		"id":      output.ID,
+		"name":    output.Name,
 		"message": "logged in",
 		"status":  "ok",
 	})
@@ -104,6 +105,7 @@ func (h *Auth) Register(w http.ResponseWriter, r *http.Request) {
 	})
 	response, err := json.Marshal(map[string]interface{}{
 		"id":      output.ID,
+		"name":    output.Name,
 		"message": "registered",
 		"status":  "ok",
 	})
