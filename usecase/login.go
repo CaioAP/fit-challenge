@@ -14,14 +14,17 @@ type Login struct {
 	PersonRepository *repository.Person
 }
 
-func (u *Login) Execute(dto dto.Login) (string, error) {
+func (u *Login) Execute(dto dto.Login) (model.AuthOutput, error) {
 	person, err := u.PersonRepository.FindByEmail(dto.Email)
 	if err != nil {
-		return "", err
+		return model.AuthOutput{}, err
 	}
 	if !model.CheckPasswordHash(dto.Password, person.Password) {
-		return "", errors.New("invalid password")
+		return model.AuthOutput{}, errors.New("invalid password")
 	}
 	token := model.CreateToken(u.TokenAuth, person.ID)
-	return token, nil
+	return model.AuthOutput{
+		Token: token,
+		ID:    person.ID,
+	}, nil
 }

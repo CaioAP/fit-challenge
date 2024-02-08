@@ -27,7 +27,7 @@ func (h *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	token, err := h.LoginUsecase.Execute(loginDto)
+	output, err := h.LoginUsecase.Execute(loginDto)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return
@@ -38,9 +38,10 @@ func (h *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		SameSite: http.SameSiteLaxMode,
 		// Secure: true,
 		Name:  "jwt",
-		Value: token,
+		Value: output.Token,
 	})
 	response, err := json.Marshal(map[string]interface{}{
+		"id":      output.ID,
 		"message": "logged in",
 		"status":  "ok",
 	})
@@ -88,7 +89,7 @@ func (h *Auth) Register(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	token, err := h.RegisterUsecase.Execute(registerDto)
+	output, err := h.RegisterUsecase.Execute(registerDto)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -99,9 +100,10 @@ func (h *Auth) Register(w http.ResponseWriter, r *http.Request) {
 		SameSite: http.SameSiteLaxMode,
 		// Secure: true,
 		Name:  "jwt",
-		Value: token,
+		Value: output.Token,
 	})
 	response, err := json.Marshal(map[string]interface{}{
+		"id":      output.ID,
 		"message": "registered",
 		"status":  "ok",
 	})

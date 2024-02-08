@@ -15,10 +15,10 @@ type Register struct {
 	PersonRepository *repository.Person
 }
 
-func (u *Register) Execute(input dto.Register) (string, error) {
+func (u *Register) Execute(input dto.Register) (model.AuthOutput, error) {
 	password, err := model.HashPassword(input.Password)
 	if err != nil {
-		return "", err
+		return model.AuthOutput{}, err
 	}
 	person := model.Person{
 		Name:  input.Name,
@@ -28,14 +28,17 @@ func (u *Register) Execute(input dto.Register) (string, error) {
 	id, err := u.PersonRepository.Create(person, password)
 	if err != nil {
 		if strings.Contains(err.Error(), "person_email_key") {
-			return "", errors.New("email already exists")
+			return model.AuthOutput{}, errors.New("email already exists")
 		}
 		if strings.Contains(err.Error(), "person_phone_key") {
-			return "", errors.New("phone already exists")
+			return model.AuthOutput{}, errors.New("phone already exists")
 		}
-		return "", err
+		return model.AuthOutput{}, err
 	}
 	person.ID = id
 	token := model.CreateToken(u.TokenAuth, person.ID)
-	return token, nil
+	return model.AuthOutput{
+		Token: token,
+		ID:    person.ID,
+	}, nil
 }
