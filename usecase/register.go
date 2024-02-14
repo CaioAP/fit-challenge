@@ -36,7 +36,7 @@ func (u *Register) Execute(input dto.Register) (model.AuthOutput, error) {
 		return model.AuthOutput{}, err
 	}
 	person.ID = id
-	token := model.CreateToken(u.TokenAuth, person.ID)
+	token := model.CreateToken(u.TokenAuth, person.ID, person.Name)
 	return model.AuthOutput{
 		Token: token,
 		ID:    person.ID,

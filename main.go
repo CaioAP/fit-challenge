@@ -38,6 +38,10 @@ func main() {
 	getPersonUsecase := usecase.GetPerson{
 		PersonRepository: &personRepository,
 	}
+	getPersonAuthorizedUsecase := usecase.GetPersonAuthorized{
+		TokenAuth:        tokenAuth,
+		PersonRepository: &personRepository,
+	}
 	createRanking := usecase.CreateRanking{
 		RankingRepository: &rankingRepository,
 	}
@@ -69,8 +73,9 @@ func main() {
 		RegisterUsecase: &registerUsecase,
 	}
 	personHandler := handler.Person{
-		CreatePerson: &createPersonUsecase,
-		GetPerson:    &getPersonUsecase,
+		CreatePerson:        &createPersonUsecase,
+		GetPerson:           &getPersonUsecase,
+		GetPersonAuthorized: &getPersonAuthorizedUsecase,
 	}
 	challengeHandler := handler.Challenge{CreateChallenge: createChallengeUsecase}
 	activityHandler := handler.Activity{CreateActivity: createActivity}
@@ -81,6 +86,8 @@ func main() {
 	r.Group(func(r chi.Router) {
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator)
+
+		r.Get("/me", personHandler.Me)
 
 		r.Route("/people", func(r chi.Router) {
 			r.Get("/{id}", personHandler.Get)

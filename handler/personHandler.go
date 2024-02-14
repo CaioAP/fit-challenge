@@ -12,8 +12,9 @@ import (
 )
 
 type Person struct {
-	CreatePerson *usecase.CreatePerson
-	GetPerson    *usecase.GetPerson
+	CreatePerson        *usecase.CreatePerson
+	GetPerson           *usecase.GetPerson
+	GetPersonAuthorized *usecase.GetPersonAuthorized
 }
 
 func (h *Person) Create(w http.ResponseWriter, r *http.Request) {
@@ -55,6 +56,30 @@ func (h *Person) Get(w http.ResponseWriter, r *http.Request) {
 	person, err := h.GetPerson.Execute(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	response, err := json.Marshal(person)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(response)
+}
+
+func (h *Person) Me(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if r.Method != "GET" {
+		http.Error(w, errors.New("method not allowed").Error(), http.StatusMethodNotAllowed)
+		return
+	}
+	cookie, err := r.Cookie("jwt")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+	person, err := h.GetPersonAuthorized.Execute(cookie.Value, r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	response, err := json.Marshal(person)
