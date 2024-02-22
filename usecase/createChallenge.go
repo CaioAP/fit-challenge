@@ -35,6 +35,7 @@ func (u *CreateChallenge) Execute(input dto.ChallengeCreate) (model.Challenge, e
 		MaxPerDay:   input.MaxPerDay,
 		StartDate:   startDate,
 		FinishDate:  finishDate,
+		CreatedAt:   time.Now(),
 		Owner:       person,
 		Person:      []model.Person{person},
 	}

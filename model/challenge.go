@@ -5,15 +5,19 @@ import (
 )
 
 type Challenge struct {
-	ID          int
-	Name        string
-	Description string
-	Goal        int
-	MaxPerDay   int
-	StartDate   time.Time
-	FinishDate  time.Time
-	Owner       Person
-	Person      []Person
+	ID           int       `json:"id"`
+	Name         string    `json:"name"`
+	Description  string    `json:"description"`
+	Goal         int       `json:"goal"`
+	MaxPerDay    int       `json:"maxPerDay"`
+	StartDate    time.Time `json:"startDate"`
+	FinishDate   time.Time `json:"finishDate"`
+	CreatedAt    time.Time `json:"createdAt"`
+	Participants int       `json:"participants"`
+	Ranking      int       `json:"ranking"`
+	Activities   int       `json:"activities"`
+	Owner        Person    `json:"owner"`
+	Person       []Person  `json:"people"`
 }
 
 func (c *Challenge) CalculateRemainingDays(date time.Time) int {

@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/caioap/desafio_bonde/model"
@@ -83,36 +84,60 @@ func (r *Challenge) FindById(id int) (model.Challenge, error) {
 	return challenge, nil
 }
 
-func (r *Challenge) FindPeople(id int) ([]model.Person, error) {
-	people := []model.Person{}
-	query := `
-		SELECT p.id, p.name, p.email, p.phone
-		FROM person p
-		INNER JOIN challenge_person cp ON cp.person_id = p.id
-		WHERE cp.challenge_id = $1
+func (r *Challenge) FindByPerson(personId int) ([]model.Challenge, error) {
+	challenges := []model.Challenge{}
+	queryParticipants := "select count(*) from person_challenge pc where challenge_id = c.id"
+	queryRanking := `
+		select row_number() over() as "ranking" 
+		from (
+			select r.person_id 
+			from ranking r
+			where r.challenge_id = c.id
+			order by r.completed desc, r.updated_at asc
+		) t
+		where t.person_id = cp.person_id
 	`
-	rows, err := r.DB.Query(query, id)
+	queryActivities := `
+		select count(*) 
+		from activity a
+		where a.challenge_id = c.id and a.person_id = cp.person_id 
+	`
+	query := fmt.Sprintf(`
+		SELECT c.*, (%s) as participants, (%s) as ranking, (%s) as activites
+		FROM challenge c
+		INNER JOIN person_challenge cp ON cp.challenge_id = c.id
+		WHERE cp.person_id = $1;
+	`, queryParticipants, queryRanking, queryActivities)
+	rows, err := r.DB.Query(query, personId)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return people, nil
+			return challenges, nil
 		}
 		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
-		person := model.Person{}
+		challenge := model.Challenge{}
 		err := rows.Scan(
-			&person.ID,
-			&person.Name,
-			&person.Email,
-			&person.Phone,
+			&challenge.ID,
+			&challenge.Name,
+			&challenge.Description,
+			&challenge.Goal,
+			&challenge.MaxPerDay,
+			&challenge.StartDate,
+			&challenge.FinishDate,
+			&challenge.Owner.ID,
+			&challenge.CreatedAt,
+			&challenge.Participants,
+			&challenge.Ranking,
+			&challenge.Activities,
 		)
 		if err != nil {
 			return nil, err
 		}
-		people = append(people, person)
+		challenges = append(challenges, challenge)
 	}
-	return people, nil
+	return challenges, nil
 }
 
 func (r *Challenge) AddPerson(challengeId int, personId int) error {

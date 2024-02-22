@@ -59,3 +59,35 @@ func (r *Person) FindByEmail(email string) (model.Person, error) {
 	}
 	return person, nil
 }
+
+func (r *Challenge) FindByChallenge(id int) ([]model.Person, error) {
+	people := []model.Person{}
+	query := `
+		SELECT p.id, p.name, p.email, p.phone
+		FROM person p
+		INNER JOIN challenge_person cp ON cp.person_id = p.id
+		WHERE cp.challenge_id = $1
+	`
+	rows, err := r.DB.Query(query, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return people, nil
+		}
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		person := model.Person{}
+		err := rows.Scan(
+			&person.ID,
+			&person.Name,
+			&person.Email,
+			&person.Phone,
+		)
+		if err != nil {
+			return nil, err
+		}
+		people = append(people, person)
+	}
+	return people, nil
+}

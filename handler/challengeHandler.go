@@ -11,16 +11,7 @@ import (
 
 type Challenge struct {
 	CreateChallenge usecase.CreateChallenge
-}
-
-func (h Challenge) Show(w http.ResponseWriter, r *http.Request) {
-	// body := page.IndexPage()
-	// page := layout.IndexLayout("Go Templ + HTMX", body)
-
-	// err := page.Render(r.Context(), w)
-	// if err != nil {
-	// 	log.Println("error", err)
-	// }
+	GetChallenges   usecase.GetChallenges
 }
 
 func (h Challenge) Create(w http.ResponseWriter, r *http.Request) {
@@ -40,6 +31,26 @@ func (h Challenge) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response, err := json.Marshal(challenge)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	w.Write(response)
+}
+
+func (h Challenge) GetAll(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, errors.New("method not allowed").Error(), http.StatusMethodNotAllowed)
+	}
+	cookie, err := r.Cookie("jwt")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+	challenges, err := h.GetChallenges.Execute(cookie.Value, r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+	response, err := json.Marshal(challenges)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

@@ -21,9 +21,9 @@ const (
 )
 
 type Activity struct {
-	ID        int
-	Type      ActivityType
-	Date      time.Time
-	Person    Person
-	Challenge Challenge
+	ID        int          `json:"id"`
+	Type      ActivityType `json:"type"`
+	Date      time.Time    `json:"date"`
+	Person    Person       `json:"person"`
+	Challenge Challenge    `json:"challenge"`
 }

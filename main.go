@@ -53,6 +53,10 @@ func main() {
 		ChallengeRepository: &challengeRepository,
 		CreateRanking:       &createRanking,
 	}
+	getChallengesUsecase := usecase.GetChallenges{
+		ChallengeRepository: &challengeRepository,
+		TokenAuth:           tokenAuth,
+	}
 	createActivity := usecase.CreateActivity{
 		PersonRepository:    &personRepository,
 		ChallengeRepository: &challengeRepository,
@@ -77,7 +81,7 @@ func main() {
 		GetPerson:           &getPersonUsecase,
 		GetPersonAuthorized: &getPersonAuthorizedUsecase,
 	}
-	challengeHandler := handler.Challenge{CreateChallenge: createChallengeUsecase}
+	challengeHandler := handler.Challenge{CreateChallenge: createChallengeUsecase, GetChallenges: getChallengesUsecase}
 	activityHandler := handler.Activity{CreateActivity: createActivity}
 
 	r := chi.NewRouter()
@@ -93,6 +97,7 @@ func main() {
 			r.Get("/{id}", personHandler.Get)
 		})
 		r.Route("/challenges", func(r chi.Router) {
+			r.Get("/", challengeHandler.GetAll)
 			r.Post("/", challengeHandler.Create)
 		})
 		r.Route("/activities", func(r chi.Router) {
